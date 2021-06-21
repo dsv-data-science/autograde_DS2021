@@ -3,7 +3,10 @@ Repository for the submission of Automatic Grading of Exam Responses: An Extensi
 
 The folder 'data' contains the Arabic dataset (AR-ASAG) that is reported in the paper. The DAMI dataset is protected under privacy, and we can therefore not publish it in the repository.
 
-The folder 'notebooks' contains all experiments under notebooks>experiments. It also contains a brief data description under 'data_description', showcasing all the statistics of the AR-ASAG dataset found in the paper.
+The folder 'notebooks' contains all experiments under notebooks>experiments. It also contains a brief data description under 'data_description', showcasing all the statistics of the AR-ASAG dataset found in the paper. The following notebooks can be found in sub-folder 'experiments':
+- flatten_experiment: contains the code and the results of the flatten experiment for all models.
+- loqo_experiment: contains the code and the results of the loqo experiment for all models.
+- qbased_experiment: contains the code and the results of the qbased experiment for all models.
 
 The folder 'utils' contains all functions that are used throughout the experiments. Here you can also find the RandomClassifier model under the sub-folder 'experiment_models'. RepeatedHoldOut is an abstract class of RepeatedBERT and RepeatedBaselines. These classes are wrappers that were created to perform repetitions of MCCV in an easy-to-read and easy-to-implement fashion.
 
