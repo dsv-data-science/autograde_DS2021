@@ -7,4 +7,4 @@ The folder 'notebooks' contains all experiments under notebooks>experiments. It 
 
 The folder 'utils' contains all functions that are used throughout the experiments. Here you can also find the RandomClassifier model under the sub-folder 'experiment_models'. RepeatedHoldOut is an abstract class of RepeatedBERT and RepeatedBaselines. These classes are wrappers that was created in order to perform repetitions of MCCV in a easy to read and easy to implement fashion for the jupyter notebooks in 'notebooks'.
 
-All notebooks have been ran for easy look-up on results.
+All notebooks have already been executed for easy look-up on results.
