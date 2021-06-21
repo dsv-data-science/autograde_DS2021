@@ -1,8 +1,5 @@
 """The module preprocessing is used for preprocessing of exams.
 
-    * fetch_freetext - Takes a list of exams and returns a dictionary of <Free-text question, [Responses, Grades,
-    Max Grades]> key-value pairs.
-
     * process_texts - Takes a list of texts for preprocessing and returns the
     preprocessed versions.
 
@@ -28,89 +25,12 @@
 """
 
 from collections import OrderedDict
-import configs.configs as configs
 import pandas as pd
 import re
 from sklearn.feature_extraction.text import CountVectorizer
 from statistics import mean, median
 import random
 from random import shuffle
-
-
-def fetch_freetext(datasets=None):
-    """Take a list of exams and returns a dictionary of <Free-text question, [Responses, Grades,
-    Max Grades]> key-value pairs.
-
-    :param datasets: The lists of datasets to fetch free-text questions from (default is None)
-    :type datasets: Collection
-    :return: a dictionary with free-text questions as keys and [responses, grades, max grades] as values.
-    :rtypee: OrderedDict
-    """
-
-    if datasets is None:
-        raise ValueError('Parameter need to be a list of datasets.')
-
-    current_question = 1  # the first question of each exam always starts at 1
-    question_answers = OrderedDict()  # the returning hashmap of questions, responses and grades.
-
-    for exam in datasets:  # for each exam in datasets
-        # get all columns with correct answers
-        right_answer_cols = [col for col in exam.columns if configs.CORRECT_ANSWER_COLUMN in col]
-
-        # for each right-answer column
-        for right_answer_col in right_answer_cols:
-            # get unique right answers from col after removing '-' unique set of values.
-            unique_right_answers = set(exam[right_answer_col].unique()) - {'-'}
-            # if column only had '-' values then it is a free-text question
-            if len(unique_right_answers) == 0:
-                # get question bank for the specific question corresponding to the right_answer_col number
-                question_bank = exam[configs.QUESTION_COLUMN + str(current_question)].unique()
-                # get the maximum grade possible for the current question_bank
-                maximum_grade = \
-                    [col for col in exam.columns if configs.SCORE_COLUMN + str(current_question) in col][0].split('/',
-                                                                                                                  1)[-1]
-
-                # for each question the question bank
-                for question in question_bank:
-                    index = exam.index  # indexes
-                    # condition = all indices where question_column + question_nr are the same as question
-                    condition = exam[configs.QUESTION_COLUMN + str(current_question)] == question
-                    # get indices where condition is met
-                    question_indices = index[condition].tolist()
-                    # get answer and score columns and rows for specific question where indices match
-                    scores_answers = exam.iloc[question_indices].filter(
-                        regex=configs.ANSWER_COLUMN + str(current_question) + '|' + configs.SCORE_COLUMN + str(
-                            current_question))
-                    # remove empty response rows
-                    scores_answers = scores_answers[
-                        scores_answers[configs.ANSWER_COLUMN + str(current_question)] != '-']
-                    # convert to list.
-                    # E.g: [[Score1, Answer1], [Score2, Answer2], [Score3, Answer3], [Score4, Answer4] ..]
-                    scores_answers = scores_answers.values.tolist()
-
-                    # for each [Score_i, Answer_i] in scores_answers, add the maximum grade.
-                    # E.g: [[Score1, Answer1, max grade], [Score2, Answer2, max grade],
-                    # [Score3, Answer3, max grade], [Score4, Answer4, max grade] ..]
-                    for score_answer in scores_answers:
-                        score_answer.append(maximum_grade)
-
-                    # the map uses the question as key, if key does not exist then val = None
-                    val = question_answers.get(question)
-                    if val is None:
-                        # if key does not exist, create new key with question and put scores_answers as value
-                        question_answers[question] = scores_answers
-                    else:
-                        # if key exist, then just add new scores_answers to val
-                        question_answers[question] = val + scores_answers
-
-            # finished with current right-answer column, increment current question and continue
-            current_question = current_question + 1
-
-        # finished with current exam, reset current_question and begin new exam
-        current_question = 1
-
-    return question_answers
-
 
 def process_texts(texts=None, punctuations=True, numbers=True, single_character=True):
     """ Takes a list of texts and returns the preprocessed versions.
