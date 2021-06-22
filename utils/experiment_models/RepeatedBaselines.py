@@ -230,43 +230,6 @@ class RepeatedBaselines(RepeatedHoldOut):
             converted_list.append([x_train, x_test, y_train, y_test, idx1, idx2])
         return converted_list
 
-    @staticmethod
-    def resample(split_list=None, resampling_techs=None):
-        """Resamples each split in a split_list using a resampling technique given by the parameter resampling_techs.
-        Returns a resampled split_list. Only supports resampling techniques from Imbalanced-learn library, such as
-        RandomUnderSampler.
-
-        Parameters
-        ----------
-        split_list : list
-            A list of repeated splits in the form given by repeated_splits()
-        resampling_techs : dict
-            A map of resampling techniques in the form of key-value pairs, where the key is the technique used and
-            value is the Object used; e.g: {"smote": SmoteObject}.Only supports resampling techniques from
-            Imbalanced-learn library, such as RandomUnderSampler.
-
-        Returns
-        ----------
-        dict
-            a converted split_list as such:
-            {resampling_tech1:resampled_split_list, resampling_tech2: resampled_split_list..}
-        """
-
-        if type(resampling_techs) != dict:
-            raise ValueError('Resampling_techs need to be a map as, for example, like: {\"smote\": SmoteObject}')
-
-        results = {}
-
-        for key in resampling_techs.keys():
-            results[key] = []
-
-        for x_train, x_test, y_train, y_test, idx1, idx2 in split_list:
-            for label, sample_tech in resampling_techs.items():
-                x_res, y_res = sample_tech.fit_resample(x_train, y_train)
-                results.get(label, []).append([x_res, x_test, y_res, y_test, idx1, idx2])
-
-        return results
-
     METRICS_FUNCTIONS = {AVERAGE_PRECISION: RepeatedHoldOut._average_prec,
                          ROC_AUC: RepeatedHoldOut._roc_auc,
                          SPEARMAN: _spearman,
